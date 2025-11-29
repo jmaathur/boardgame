@@ -5,8 +5,8 @@ public class BoardManager : MonoBehaviour
     public Transform ParentTransform;
     public GameObject BoardTilePrefab;
 
-    private const int BOARD_WIDTH = 30;
-    private const int BOARD_HEIGHT = 30;
+    private const int BOARD_WIDTH = 32;
+    private const int BOARD_HEIGHT = 32;
 
     private GameObject[,] gameTiles;
 
