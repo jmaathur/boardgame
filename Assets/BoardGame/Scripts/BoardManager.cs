@@ -1,22 +1,22 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class BoardManager : MonoBehaviour
 {
     public Transform ParentTransform;
     public GameObject BoardTilePrefab;
 
-    [Header("Models")]
-    public GameObject desertCathedralPrefab;
-    public GameObject desertBarracksPrefab;
-
-    [Header("Model Adjustments")]
-    public Vector3 cathedralPositionOffset = Vector3.zero;
-    public Vector3 barracksPositionOffset = Vector3.zero;
+    [Header("Unit Details")]
+    public CathedralDetails cathedralDetails;
+    public BarracksDetails barracksDetails;
 
     private const int BOARD_WIDTH = 32;
     private const int BOARD_HEIGHT = 32;
 
     private GameObject[,] gameTiles;
+    private Unit[,] tileOccupancy;
+    private List<Unit> player1Units;
+    private List<Unit> player2Units;
 
     void Start()
     {
@@ -26,6 +26,9 @@ public class BoardManager : MonoBehaviour
     void InitializeBoard()
     {
         gameTiles = new GameObject[BOARD_WIDTH, BOARD_HEIGHT];
+        tileOccupancy = new Unit[BOARD_WIDTH, BOARD_HEIGHT];
+        player1Units = new List<Unit>();
+        player2Units = new List<Unit>();
 
         for (int x = 0; x < BOARD_WIDTH; x++)
         {
@@ -51,45 +54,101 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        // Place models on the board
-        PlaceModel(desertCathedralPrefab, 8, 5, 2, 0.87f, cathedralPositionOffset);
-        PlaceModel(desertBarracksPrefab, 22, 5, 2, 0.36f, barracksPositionOffset);
+        // Place units on the board
+        PlaceUnit(cathedralDetails, Player.Player1, 8, 5);
+        PlaceUnit(barracksDetails, Player.Player1, 22, 5);
+        PlaceUnit(cathedralDetails, Player.Player2, 8, 26);
+        PlaceUnit(barracksDetails, Player.Player2, 22, 26);
     }
 
-    void PlaceModel(GameObject modelPrefab, int startX, int startY, int width, float centerZ, Vector3 positionOffset)
+    Unit PlaceUnit(IUnitDetails unitDetails, Player owner, int startX, int startY)
     {
-        if (modelPrefab == null)
+        if (unitDetails == null)
         {
-            Debug.LogWarning($"Model prefab is null, cannot place at ({startX}, {startY})");
-            return;
+            Debug.LogWarning($"Unit details is null, cannot place at ({startX}, {startY})");
+            return null;
         }
+
+        Vector2Int footprint = unitDetails.FootprintSize;
 
         // Check bounds
-        if (startX < 0 || startY < 0 || startX + width > BOARD_WIDTH || startY + width > BOARD_HEIGHT)
+        if (startX < 0 || startY < 0 ||
+            startX + footprint.x > BOARD_WIDTH ||
+            startY + footprint.y > BOARD_HEIGHT)
         {
-            Debug.LogError($"Model placement out of bounds at ({startX}, {startY}) with size ({width}, {width})");
-            return;
+            Debug.LogError($"Unit placement out of bounds at ({startX}, {startY}) with size {footprint.x}x{footprint.y}");
+            return null;
         }
 
-        // Calculate center position for the model
-        // For a tile at position X, it occupies X to X+1 in world space
-        // So for a 2x2 model
-        // The center should be at (startX + 1, startY + 1) to span across the correct tiles
-        float centerX = startX + (width - 1) * 0.5f;
-        float centerY = startY + (width - 1) * 0.5f;
-        Vector3 modelPosition = new Vector3(centerX, centerZ, centerY);
-
-        // Instantiate the model with 90 degree rotation on X axis to face upward
-        Quaternion rotation = Quaternion.Euler(-90, 0, 0);
-        GameObject model = Instantiate(modelPrefab, modelPosition + positionOffset, rotation);
-        model.name = $"{modelPrefab.name}_{startX}_{startY}";
-
-        if (ParentTransform != null)
+        // Check if tiles are occupied
+        if (!AreTilesAvailable(startX, startY, footprint))
         {
-            model.transform.SetParent(ParentTransform, true);
+            Debug.LogError($"Tiles at ({startX}, {startY}) are already occupied");
+            return null;
         }
 
-        Debug.Log($"Placed {modelPrefab.name} at calculated position {modelPosition}, with offset {positionOffset}, actual position: {model.transform.position}");
+        // Create Unit instance
+        Unit unit = new Unit(owner, unitDetails, new Vector2Int(startX, startY));
+
+        // Calculate world position
+        float centerX = startX + (footprint.x - 1) * 0.5f;
+        float centerY = startY + (footprint.y - 1) * 0.5f;
+        Vector3 position = new Vector3(centerX, unitDetails.ModelHeight, centerY);
+
+        // Spawn visual model
+        GameObject visual = Instantiate(
+            unitDetails.ModelPrefab,
+            position + unitDetails.ModelPositionOffset,
+            unitDetails.ModelRotation
+        );
+        visual.name = $"{owner}_{unitDetails.UnitName}_{startX}_{startY}";
+        visual.transform.SetParent(ParentTransform, true);
+        unit.VisualInstance = visual;
+
+        // Mark tiles as occupied
+        MarkTilesOccupied(unit, startX, startY, footprint);
+
+        // Add to appropriate player's unit list
+        if (owner == Player.Player1)
+            player1Units.Add(unit);
+        else
+            player2Units.Add(unit);
+
+        Debug.Log($"Placed {owner} {unitDetails.UnitName} at ({startX}, {startY})");
+        return unit;
+    }
+
+    bool AreTilesAvailable(int startX, int startY, Vector2Int footprint)
+    {
+        for (int x = startX; x < startX + footprint.x; x++)
+            for (int y = startY; y < startY + footprint.y; y++)
+                if (tileOccupancy[x, y] != null)
+                    return false;
+        return true;
+    }
+
+    void MarkTilesOccupied(Unit unit, int startX, int startY, Vector2Int footprint)
+    {
+        for (int x = startX; x < startX + footprint.x; x++)
+            for (int y = startY; y < startY + footprint.y; y++)
+                tileOccupancy[x, y] = unit;
+    }
+
+    void ClearTileOccupancy(Unit unit)
+    {
+        Vector2Int footprint = unit.UnitDetails.FootprintSize;
+        Vector2Int pos = unit.PlacementPosition;
+        for (int x = pos.x; x < pos.x + footprint.x; x++)
+            for (int y = pos.y; y < pos.y + footprint.y; y++)
+                if (tileOccupancy[x, y] == unit)
+                    tileOccupancy[x, y] = null;
+    }
+
+    public Unit GetUnitAtPosition(int x, int y)
+    {
+        if (x >= 0 && x < BOARD_WIDTH && y >= 0 && y < BOARD_HEIGHT)
+            return tileOccupancy[x, y];
+        return null;
     }
 
     public GameObject GetTile(int x, int y)
