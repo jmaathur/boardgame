@@ -1,2 +1,15 @@
 fileFormatVersion: 2
 guid: 189744ceceb93422685c1b7af60fa2c7
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - ParentTransform: {instanceID: 0}
+  - BoardTilePrefab: {fileID: 8829680104954394448, guid: f3ad29a703f364134affafe708bba162, type: 3}
+  - desertCathedralPrefab: {fileID: 919132149155446097, guid: 2aa1826fb49274c588703c8344417b0f, type: 3}
+  - desertBarracksPrefab: {fileID: 919132149155446097, guid: b29f9cfd682ea4f0f962f594e7f2357f, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

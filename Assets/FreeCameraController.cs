@@ -18,8 +18,8 @@ public class FreeCameraController : MonoBehaviour
     public float mobileRotationSensitivity = 0.3f;
 
     // Board dimensions (from BoardManager)
-    private const int BOARD_WIDTH = 30;
-    private const int BOARD_HEIGHT = 30;
+    private const int BOARD_WIDTH = 32;
+    private const int BOARD_HEIGHT = 32;
 
     private float pitch = 0f; // up/down angle
     private float yaw = 0f;   // left/right angle

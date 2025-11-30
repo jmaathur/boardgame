@@ -1085,6 +1085,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ParentTransform: {fileID: 1541877563}
   BoardTilePrefab: {fileID: 8829680104954394448, guid: f3ad29a703f364134affafe708bba162, type: 3}
+  desertCathedralPrefab: {fileID: 6493935882889031121, guid: bef4533b232d9418cab44bddafeb40f3, type: 3}
+  desertBarracksPrefab: {fileID: 1037047887385385866, guid: 3ed371d90ccf341fc844ef4680fc6da2, type: 3}
+  cathedralPositionOffset: {x: 1.203, y: 0.342, z: -1.189}
+  barracksPositionOffset: {x: 1.203, y: 0.342, z: -1.189}
 --- !u!1 &2065756970
 GameObject:
   m_ObjectHideFlags: 0
