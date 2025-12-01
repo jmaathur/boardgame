@@ -9,6 +9,7 @@ public class BoardManager : MonoBehaviour
     [Header("Unit Details")]
     public CathedralDetails cathedralDetails;
     public BarracksDetails barracksDetails;
+    public HolyKnightDetails holyKnightDetails;
 
     private const int BOARD_WIDTH = 32;
     private const int BOARD_HEIGHT = 32;
@@ -17,6 +18,7 @@ public class BoardManager : MonoBehaviour
     private Unit[,] tileOccupancy;
     private List<Unit> player1Units;
     private List<Unit> player2Units;
+    private bool isHolyKnightPlacementMode = false;
 
     void Start()
     {
@@ -57,8 +59,8 @@ public class BoardManager : MonoBehaviour
         // Place units on the board
         PlaceUnit(cathedralDetails, Player.Player1, 8, 5);
         PlaceUnit(barracksDetails, Player.Player1, 22, 5);
-        PlaceUnit(cathedralDetails, Player.Player2, 8, 26);
-        PlaceUnit(barracksDetails, Player.Player2, 22, 26);
+        PlaceUnit(barracksDetails, Player.Player2, 8, 26);
+        PlaceUnit(cathedralDetails, Player.Player2, 22, 26);
     }
 
     Unit PlaceUnit(IUnitDetails unitDetails, Player owner, int startX, int startY)
@@ -95,11 +97,18 @@ public class BoardManager : MonoBehaviour
         float centerY = startY + (footprint.y - 1) * 0.5f;
         Vector3 position = new Vector3(centerX, unitDetails.ModelHeight, centerY);
 
+        // Determine rotation (Player 2 units face opposite direction)
+        Quaternion rotation = unitDetails.ModelRotation;
+        if (owner == Player.Player2)
+        {
+            rotation = Quaternion.Euler(0, 180, 0) * rotation;
+        }
+
         // Spawn visual model
         GameObject visual = Instantiate(
             unitDetails.ModelPrefab,
             position + unitDetails.ModelPositionOffset,
-            unitDetails.ModelRotation
+            rotation
         );
         visual.name = $"{owner}_{unitDetails.UnitName}_{startX}_{startY}";
         visual.transform.SetParent(ParentTransform, true);
@@ -160,6 +169,12 @@ public class BoardManager : MonoBehaviour
         return null;
     }
 
+    public void ToggleHolyKnightPlacementMode()
+    {
+        isHolyKnightPlacementMode = !isHolyKnightPlacementMode;
+        Debug.Log($"Holy Knight placement mode: {(isHolyKnightPlacementMode ? "ON" : "OFF")}");
+    }
+
     void Update()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -173,7 +188,32 @@ public class BoardManager : MonoBehaviour
                 if (hit.transform.tag.Equals("BoardTile"))
                 {
                     var bt = hit.transform.GetComponent<BoardTile>();
-                    Debug.Log(bt.boardTileCaptionText.text);
+
+                    if (isHolyKnightPlacementMode)
+                    {
+                        // Place Holy Knight at this tile
+                        // Note: bt.row stores x coordinate, bt.col stores y coordinate
+                        int tileX = bt.row;
+                        int tileY = bt.col;
+
+                        Debug.Log($"Attempting to place Holy Knight at tile ({tileX}, {tileY})");
+
+                        // Check if tile is empty
+                        if (GetUnitAtPosition(tileX, tileY) == null)
+                        {
+                            PlaceUnit(holyKnightDetails, Player.Player1, tileX, tileY);
+                            isHolyKnightPlacementMode = false; // Exit placement mode after placing
+                            Debug.Log($"Placed Holy Knight at ({tileX}, {tileY}). Placement mode OFF.");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Cannot place Holy Knight at ({tileX}, {tileY}) - tile is occupied");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log(bt.boardTileCaptionText.text);
+                    }
                 }
             }
         }

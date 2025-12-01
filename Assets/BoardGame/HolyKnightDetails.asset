@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd37b54c901004a11b47d8020a864f9a, type: 3}
+  m_Name: HolyKnightDetails
+  m_EditorClassIdentifier: 
+  unitName: Holy Knight
+  modelPrefab: {fileID: 8312690557078183922, guid: 2bc11a94d31bc48389b80d7125c99652, type: 3}
+  modelPositionOffset: {x: 1.203, y: -0.183, z: -1.189}
+  modelRotationEuler: {x: -90, y: 0, z: 0}
+  modelHeight: 1
+  footprintSize: {x: 1, y: 1}
