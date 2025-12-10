@@ -10,6 +10,7 @@ public class BoardManager : MonoBehaviour
     public CathedralDetails cathedralDetails;
     public BarracksDetails barracksDetails;
     public HolyKnightDetails holyKnightDetails;
+    public FootmanDetails footmanDetails;
 
     private const int BOARD_WIDTH = 32;
     private const int BOARD_HEIGHT = 32;
@@ -19,6 +20,7 @@ public class BoardManager : MonoBehaviour
     private List<Unit> player1Units;
     private List<Unit> player2Units;
     private bool isHolyKnightPlacementMode = false;
+    private bool isFootmanPlacementMode = false;
 
     void Start()
     {
@@ -175,6 +177,12 @@ public class BoardManager : MonoBehaviour
         Debug.Log($"Holy Knight placement mode: {(isHolyKnightPlacementMode ? "ON" : "OFF")}");
     }
 
+    public void ToggleFootmanPlacementMode()
+    {
+        isFootmanPlacementMode = !isFootmanPlacementMode;
+        Debug.Log($"Footman placement mode: {(isFootmanPlacementMode ? "ON" : "OFF")}");
+    }
+
     void Update()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -208,6 +216,27 @@ public class BoardManager : MonoBehaviour
                         else
                         {
                             Debug.LogWarning($"Cannot place Holy Knight at ({tileX}, {tileY}) - tile is occupied");
+                        }
+                    }
+                    else if (isFootmanPlacementMode)
+                    {
+                        // Place Footman at this tile
+                        // Note: bt.row stores x coordinate, bt.col stores y coordinate
+                        int tileX = bt.row;
+                        int tileY = bt.col;
+
+                        Debug.Log($"Attempting to place Footman at tile ({tileX}, {tileY})");
+
+                        // Check if tile is empty
+                        if (GetUnitAtPosition(tileX, tileY) == null)
+                        {
+                            PlaceUnit(footmanDetails, Player.Player1, tileX, tileY);
+                            isFootmanPlacementMode = false; // Exit placement mode after placing
+                            Debug.Log($"Placed Footman at ({tileX}, {tileY}). Placement mode OFF.");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Cannot place Footman at ({tileX}, {tileY}) - tile is occupied");
                         }
                     }
                     else

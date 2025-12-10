@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d15f8195e508742fa9c38c86321172c5, type: 3}
+  m_Name: FootmanDetails
+  m_EditorClassIdentifier: 
+  unitName: Footman
+  modelPrefab: {fileID: 8861443159348183703, guid: 679b415ee0f4a4ea3983f7f8a23c255a, type: 3}
+  modelPositionOffset: {x: 0, y: 0, z: 0}
+  modelRotationEuler: {x: -90, y: 0, z: 0}
+  modelHeight: 0.36
+  footprintSize: {x: 1, y: 1}
