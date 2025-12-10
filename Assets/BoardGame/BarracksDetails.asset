@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BarracksDetails
   m_EditorClassIdentifier: 
   unitName: Barracks
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 1037047887385385866, guid: 3ed371d90ccf341fc844ef4680fc6da2, type: 3}
   modelPositionOffset: {x: 1.203, y: 0.342, z: -1.189}
   modelRotationEuler: {x: -90, y: 0, z: 0}
   modelHeight: 0.36

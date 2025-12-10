@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CathedralDetails
   m_EditorClassIdentifier: 
   unitName: Cathedral
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 6493935882889031121, guid: bef4533b232d9418cab44bddafeb40f3, type: 3}
   modelPositionOffset: {x: 1.203, y: 0.342, z: -1.189}
   modelRotationEuler: {x: -90, y: 0, z: 0}
   modelHeight: 0.87
