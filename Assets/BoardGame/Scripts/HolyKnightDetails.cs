@@ -16,4 +16,10 @@ public class HolyKnightDetails : ScriptableObject, IUnitDetails
     public Quaternion ModelRotation => Quaternion.Euler(modelRotationEuler);
     public float ModelHeight => modelHeight;
     public Vector2Int FootprintSize => footprintSize;
+
+    public Vector3[] GetSquadFormation()
+    {
+        // Single unit at center
+        return new Vector3[] { Vector3.zero };
+    }
 }

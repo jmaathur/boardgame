@@ -94,11 +94,6 @@ public class BoardManager : MonoBehaviour
         // Create Unit instance
         Unit unit = new Unit(owner, unitDetails, new Vector2Int(startX, startY));
 
-        // Calculate world position
-        float centerX = startX + (footprint.x - 1) * 0.5f;
-        float centerY = startY + (footprint.y - 1) * 0.5f;
-        Vector3 position = new Vector3(centerX, unitDetails.ModelHeight, centerY);
-
         // Determine rotation (Player 2 units face opposite direction)
         Quaternion rotation = unitDetails.ModelRotation;
         if (owner == Player.Player2)
@@ -106,15 +101,28 @@ public class BoardManager : MonoBehaviour
             rotation = Quaternion.Euler(0, 180, 0) * rotation;
         }
 
-        // Spawn visual model
-        GameObject visual = Instantiate(
-            unitDetails.ModelPrefab,
-            position + unitDetails.ModelPositionOffset,
-            rotation
-        );
-        visual.name = $"{owner}_{unitDetails.UnitName}_{startX}_{startY}";
-        visual.transform.SetParent(ParentTransform, true);
-        unit.VisualInstance = visual;
+        // Get squad formation and spawn models
+        Vector3[] squadFormation = unitDetails.GetSquadFormation();
+        GameObject squadParent = new GameObject($"{owner}_{unitDetails.UnitName}_{startX}_{startY}");
+        squadParent.transform.SetParent(ParentTransform, true);
+
+        for (int i = 0; i < squadFormation.Length; i++)
+        {
+            // Calculate world position for each model in the squad
+            Vector3 basePosition = new Vector3(startX, unitDetails.ModelHeight, startY);
+            Vector3 formationOffset = squadFormation[i];
+            Vector3 worldPosition = basePosition + formationOffset + unitDetails.ModelPositionOffset;
+
+            GameObject model = Instantiate(
+                unitDetails.ModelPrefab,
+                worldPosition,
+                rotation
+            );
+            model.name = $"{unitDetails.UnitName}_{i}";
+            model.transform.SetParent(squadParent.transform, true);
+        }
+
+        unit.VisualInstance = squadParent;
 
         // Mark tiles as occupied
         MarkTilesOccupied(unit, startX, startY, footprint);
