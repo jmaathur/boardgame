@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Footman
   modelPrefab: {fileID: 8861443159348183703, guid: 679b415ee0f4a4ea3983f7f8a23c255a, type: 3}
-  modelPositionOffset: {x: 1.203, y: 0.25, z: -1.49}
+  modelPositionOffset: {x: 1.203, y: 0.25, z: -1.55}
   modelRotationEuler: {x: -90, y: 0, z: 0}
   modelHeight: 0.36
   footprintSize: {x: 1, y: 1}
