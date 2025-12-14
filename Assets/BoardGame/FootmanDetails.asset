@@ -17,4 +17,4 @@ MonoBehaviour:
   modelPositionOffset: {x: 1.203, y: 0.25, z: -1.55}
   modelRotationEuler: {x: -90, y: 0, z: 0}
   modelHeight: 0.36
-  footprintSize: {x: 1, y: 1}
+  footprintSize: {x: 3, y: 1}
