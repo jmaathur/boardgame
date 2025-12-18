@@ -11,6 +11,8 @@ public class BoardManager : MonoBehaviour
     public BarracksDetails barracksDetails;
     public HolyKnightDetails holyKnightDetails;
     public FootmanDetails footmanDetails;
+    public ArcherDetails archerDetails;
+    public WhelpDetails whelpDetails;
 
     private const int BOARD_WIDTH = 32;
     private const int BOARD_HEIGHT = 32;
@@ -21,6 +23,8 @@ public class BoardManager : MonoBehaviour
     private List<Unit> player2Units;
     private bool isHolyKnightPlacementMode = false;
     private bool isFootmanPlacementMode = false;
+    private bool isArcherPlacementMode = false;
+    private bool isWhelpPlacementMode = false;
 
     void Start()
     {
@@ -191,6 +195,18 @@ public class BoardManager : MonoBehaviour
         Debug.Log($"Footman placement mode: {(isFootmanPlacementMode ? "ON" : "OFF")}");
     }
 
+    public void ToggleArcherPlacementMode()
+    {
+        isArcherPlacementMode = !isArcherPlacementMode;
+        Debug.Log($"Archer placement mode: {(isArcherPlacementMode ? "ON" : "OFF")}");
+    }
+
+    public void ToggleWhelpPlacementMode()
+    {
+        isWhelpPlacementMode = !isWhelpPlacementMode;
+        Debug.Log($"Whelp placement mode: {(isWhelpPlacementMode ? "ON" : "OFF")}");
+    }
+
     void Update()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -245,6 +261,44 @@ public class BoardManager : MonoBehaviour
                         else
                         {
                             Debug.LogWarning($"Cannot place Footman at ({tileX}, {tileY}) - tile is occupied");
+                        }
+                    }
+                    else if (isArcherPlacementMode)
+                    {
+                        // Place Archer at this tile
+                        int tileX = bt.row;
+                        int tileY = bt.col;
+
+                        Debug.Log($"Attempting to place Archer at tile ({tileX}, {tileY})");
+
+                        if (GetUnitAtPosition(tileX, tileY) == null)
+                        {
+                            PlaceUnit(archerDetails, Player.Player1, tileX, tileY);
+                            isArcherPlacementMode = false;
+                            Debug.Log($"Placed Archer at ({tileX}, {tileY}). Placement mode OFF.");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Cannot place Archer at ({tileX}, {tileY}) - tile is occupied");
+                        }
+                    }
+                    else if (isWhelpPlacementMode)
+                    {
+                        // Place Whelp at this tile
+                        int tileX = bt.row;
+                        int tileY = bt.col;
+
+                        Debug.Log($"Attempting to place Whelp at tile ({tileX}, {tileY})");
+
+                        if (GetUnitAtPosition(tileX, tileY) == null)
+                        {
+                            PlaceUnit(whelpDetails, Player.Player1, tileX, tileY);
+                            isWhelpPlacementMode = false;
+                            Debug.Log($"Placed Whelp at ({tileX}, {tileY}). Placement mode OFF.");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Cannot place Whelp at ({tileX}, {tileY}) - tile is occupied");
                         }
                     }
                     else
