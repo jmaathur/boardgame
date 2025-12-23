@@ -1,22 +1,24 @@
 using UnityEngine;
 
 // Recommended settings when creating the asset:
-// - Footprint Size: (3, 1) - Archers occupy 3 tiles width, 1 tile depth
+// - Footprint Size: (2, 2) - Archers occupy 2 tiles width, 2 tiles depth
 // - Model Prefab: ArcherInTheMist prefab
 [CreateAssetMenu(fileName = "ArcherDetails", menuName = "Units/Archer Details")]
 public class ArcherDetails : BaseUnitDetails
 {
     public override Vector3[] GetSquadFormation()
     {
-        // 5 archers in a line formation spread across 3 tiles
+        // 5 archers: 3 in front row, 2 in back row across 2 tiles
         Vector3[] positions = new Vector3[5];
-        float spacing = 0.5f;
 
-        for (int i = 0; i < 5; i++)
-        {
-            float x = (i - 2) * spacing; // Center the formation (-2, -1, 0, 1, 2)
-            positions[i] = new Vector3(x, 0, 0);
-        }
+        // Front row: 3 archers
+        positions[0] = new Vector3(0, 0, 0);      // Front left
+        positions[1] = new Vector3(0.5f, 0, 0);   // Front center
+        positions[2] = new Vector3(1.0f, 0, 0);   // Front right
+
+        // Back row: 2 archers (staggered)
+        positions[3] = new Vector3(0.25f, 0, 0.5f);  // Back left
+        positions[4] = new Vector3(0.75f, 0, 0.5f);  // Back right
 
         return positions;
     }
