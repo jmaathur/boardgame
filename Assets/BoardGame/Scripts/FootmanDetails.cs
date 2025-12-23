@@ -14,7 +14,7 @@ public class FootmanDetails : BaseUnitDetails
         for (int i = 0; i < 5; i++)
         {
             float x = i * unitSpacing; // Same spacing as before
-            positions[index++] = new Vector3(x, 0, 0.4f); // Back row
+            positions[index++] = new Vector3(x, 0, 0.5f); // Back row
         }
 
         // Front row: 4 footmen more inward, narrower spread
@@ -27,4 +27,5 @@ public class FootmanDetails : BaseUnitDetails
 
         return positions;
     }
+
 }

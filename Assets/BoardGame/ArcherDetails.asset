@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Archer
   modelPrefab: {fileID: 7857936387806872520, guid: ce1c8188e79f947f78a77ccf6243bc6b, type: 3}
-  modelPositionOffset: {x: 1.203, y: 0, z: -1.189}
+  modelPositionOffset: {x: 1.15, y: 0.315, z: -1.45}
   modelRotationEuler: {x: -90, y: 0, z: 0}
   modelHeight: 0.36
   footprintSize: {x: 3, y: 1}

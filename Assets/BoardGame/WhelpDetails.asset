@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Whelp
   modelPrefab: {fileID: 306818101221901236, guid: 1b8b47ffe6ada46d69c8b2dcfdf31f09, type: 3}
-  modelPositionOffset: {x: 2, y: 1, z: -1.189}
+  modelPositionOffset: {x: 1.25, y: 1, z: -1.189}
   modelRotationEuler: {x: -90, y: 0, z: 0}
   modelHeight: 0.36
-  footprintSize: {x: 1, y: 1}
+  footprintSize: {x: 2, y: 1}

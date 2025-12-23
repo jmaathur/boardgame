@@ -8,12 +8,17 @@ public class WhelpDetails : BaseUnitDetails
 {
     public override Vector3[] GetSquadFormation()
     {
-        // 3 whelps in a V formation for flying units
-        Vector3[] positions = new Vector3[3];
+        // 5 whelps: 3 in front row, 2 in back row across 2 tiles
+        Vector3[] positions = new Vector3[5];
 
-        positions[0] = new Vector3(0, 0.3f, 0.3f);    // Lead whelp, slightly elevated
-        positions[1] = new Vector3(-0.4f, 0.2f, 0);   // Left wing
-        positions[2] = new Vector3(0.4f, 0.2f, 0);    // Right wing
+        // Front row: 3 whelps spread across 2 tiles
+        positions[0] = new Vector3(-0.1f, 0.2f, 0);       // Front left
+        positions[1] = new Vector3(0.5f, 0.2f, 0);    // Front center
+        positions[2] = new Vector3(1.1f, 0.2f, 0);    // Front right
+
+        // Back row: 2 whelps, slightly elevated for flying formation
+        positions[3] = new Vector3(0.2f, 0.3f, 0.4f);  // Back left, elevated
+        positions[4] = new Vector3(0.8f, 0.3f, 0.4f);  // Back right, elevated
 
         return positions;
     }
