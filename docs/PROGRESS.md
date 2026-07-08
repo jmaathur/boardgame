@@ -63,4 +63,82 @@ Legend: ✅ done & verified · 🟡 partial · ⏭️ deferred to a human
 
 ---
 
+## M1 — Catalog spine + Forge v0 ✅
+
+**Built**
+- **Catalog schema** (`core/types/src/catalog-schema.ts`, `SCHEMA_VERSION = 1`):
+  the full zod contract for sim data — `ScaledValue`, stat mods, the
+  `kind`-discriminated `Effect` union (v1 set: damage / areaDamage /
+  applyStatus / heal / grantShield / spawnUnits / modifySelf), the
+  `kind`-discriminated `Trigger` union, weapons with a `mode`-discriminated
+  fire union (instant / volley / beam), abilities, techs, unit defs, statuses,
+  zones, content packs, commanders, and `matchRules` (board / deploy zones /
+  economy / timers / leveling / tech escalation / starting buildings /
+  commanders). The board size now lives here as data.
+- **`core/catalog` package**:
+  - `data/packs/base.json` — the medieval base pack: 10 units (footman chaff
+    swarm ×24, archer, whelp flyer, holyKnight bruiser, ballista artillery,
+    arbalest sniper, gargoyle anti-air, warBanner aura, barracks + cathedral
+    buildings), plus the `rallied` status. Stats are Mechabellum ratios ÷6;
+    each unit carries a `_source`-style comment naming its archetype.
+  - `data/match-rules.json` — 32×48 board, halves at col 24 (no gap), income
+    200×N, 2 deploys/round, timers 70/120s, leveling, tech escalation +200,
+    cathedral + barracks per side, 3 commanders (Warlord/Steward/Zealot).
+  - `scripts/build.ts` — validate (zod) → cross-pack lints → canonicalize
+    (key-sorted, minified) → `dist/catalog.json` + `dist/catalog.hash` +
+    `dist/catalog.embedded.ts` (generated TS module of the exact bytes, so
+    `bun build --compile` embeds the catalog in the server binary). Exits
+    non-zero and writes nothing on any error.
+  - `src/lint.ts` — the cross-pack lint suite (unique ids, ref resolution,
+    formation length == count, offsets inside footprint, footprints fit deploy
+    zones, spawn-chain depth cap, commander/building refs). `src/canonical.ts`
+    (deterministic serialize + sha256). `src/index.ts` (`buildCatalog`,
+    `loadBuiltCatalog`). `src/embedded.ts` (`loadEmbeddedCatalog`, exported at
+    subpath `@core/catalog/embedded`).
+  - `scripts/author-base.ts` — one-shot generator that emitted base.json +
+    match-rules.json (kept for regeneration; not part of the build).
+  - 13 bun tests (`src/lint.test.ts`): base catalog validates clean, build is
+    deterministic, canonical form is sorted/minified, and every lint rule
+    triggers on a crafted violation.
+- **Game-server catalog integration** (`apps/game-server`): loads the embedded
+  catalog at boot; `Room` is now catalog-driven — board size and every unit
+  footprint come from the catalog, so placement validation is multi-tile
+  (footprint overlap, not single-tile) on the 32×48 board, and unknown unit
+  types are rejected (`unknownUnitType`). `/health` now reports `catalogHash`
+  and `board`. The compiled binary embeds the catalog (no sidecar files).
+- **Protocol v1 relaxation** (not full v2 — that's M3): `unitType` on the wire
+  is now any catalog id string (runtime-validated), not a fixed enum; the game
+  state board is a plain positive-int pair, not the 72×60 literals; added the
+  `unknownUnitType` error code. `BOARD_WIDTH`/`BOARD_HEIGHT` remain as a legacy
+  coordinate envelope.
+- **Forge v0** (`apps/forge`): a dependency-light `Bun.serve` app on
+  `localhost:7780` (no bundler) — `GET /api/catalog|packs|packs/:file|match-rules|schema`,
+  `POST /api/build`, and a self-contained HTML UI that renders every unit,
+  commander, and the match rules, shows a green/red validation banner, and has
+  a working Build button. Path-traversal-hardened pack reads. 7 bun tests.
+- **Turbo/CI wiring**: `@core/catalog` build produces committed `dist/`;
+  `catalog:build` / `catalog:check` root scripts; a `check` turbo task; the
+  built catalog is committed (un-ignored in `.gitignore`) so `catalog:check`'s
+  `git diff --exit-code dist` catches drift.
+
+**Verified**
+- `bun run catalog:check` — build + `git diff --exit-code dist` clean.
+- **Hash sensitivity**: editing archer damage 120→130 changed the hash
+  (638ae0…→a48e20…); reverting restored 638ae0… exactly (deterministic).
+- **Error detection**: injected lint error (formation count) and schema error
+  (negative hp) each fail the build with a precise message; Forge's
+  `/api/catalog` reported `ok:false` with the exact lint issue for an injected
+  unknown-status reference.
+- **Forge renders every unit**: `/api/catalog` → `ok:true`, 10 units, hash
+  638ae0…, board 32×48, commanders warlord/steward/zealot; `/` serves HTML.
+- **Compiled binary**: `bun run build` → binary whose `/health` returns the
+  embedded catalog hash + 32×48 board with no sidecar files.
+- `bunx turbo run check-types test build` → **15/15 tasks green** (core/types,
+  core/catalog, game-server 28 tests, forge 7 tests, battle-server dotnet).
+- `bun run format:check` → clean.
+
+**Deferred to a human** — none for M1. (The Unity-side catalog consumption —
+manifests, StreamingAssets sync, Formation Preview — is M2, where the
+Editor-GUI parts are noted.)
+
 <!-- Subsequent milestones appended as they complete. -->

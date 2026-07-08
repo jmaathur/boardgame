@@ -34,6 +34,10 @@ jobs:
       - name: Check types, test, build
         run: bunx turbo run check-types test build --filter='!battle-server'
 
+      # Rebuild the catalog and fail if the committed dist/ drifted from source.
+      - name: Catalog check (dist not stale)
+        run: bun run catalog:check
+
   # ---------------------------------------------------------------------------
   # .NET engine + battle server: build the solution and run xUnit tests
   # (golden scenarios, repeat-seed determinism, placement properties, codegen

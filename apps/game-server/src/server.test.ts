@@ -127,18 +127,27 @@ describe("portFromEnv", () => {
 });
 
 describe("game server", () => {
-	test("GET /health reports rooms and players", async () => {
+	test("GET /health reports rooms, players, and the catalog hash", async () => {
 		const gs = startServer();
-		const before = await (
-			await fetch(`http://localhost:${gs.server.port}/health`)
-		).json();
-		expect(before).toEqual({ status: "ok", rooms: 0, players: 0 });
+		const health = async () =>
+			(await fetch(`http://localhost:${gs.server.port}/health`).then((r) =>
+				r.json(),
+			)) as {
+				status: string;
+				rooms: number;
+				players: number;
+				catalogHash: string;
+				board: { w: number; h: number };
+			};
+
+		const before = await health();
+		expect(before).toMatchObject({ status: "ok", rooms: 0, players: 0 });
+		expect(before.catalogHash).toBe(gs.catalog.hash);
+		expect(before.board).toEqual(gs.catalog.board);
 
 		await joinedClient(gs, "lobby", "Jeev");
-		const after = await (
-			await fetch(`http://localhost:${gs.server.port}/health`)
-		).json();
-		expect(after).toEqual({ status: "ok", rooms: 1, players: 1 });
+		const after = await health();
+		expect(after).toMatchObject({ status: "ok", rooms: 1, players: 1 });
 	});
 
 	test("join returns a welcome carrying the authoritative state", async () => {
@@ -149,7 +158,11 @@ describe("game server", () => {
 		expect(welcome.type).toBe("welcome");
 		if (welcome.type === "welcome") {
 			expect(welcome.roomId).toBe("lobby");
-			expect(welcome.state.board).toEqual({ width: 72, height: 60 });
+			// Board is now catalog-driven (32x48), not the old hardcoded 72x60.
+			expect(welcome.state.board).toEqual({
+				width: gs.catalog.board.w,
+				height: gs.catalog.board.h,
+			});
 			expect(welcome.state.players).toHaveLength(1);
 			expect(welcome.state.units).toHaveLength(0);
 		}

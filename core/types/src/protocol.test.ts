@@ -35,9 +35,23 @@ describe("parseClientMessage", () => {
 		expect(result.ok).toBe(false);
 	});
 
-	test("rejects unknown unit types", () => {
+	test("accepts any non-empty unit-type string (catalog-validated at runtime)", () => {
+		// As of M1 the wire no longer pins unitType to a fixed enum — validity is
+		// checked against the loaded catalog by the server, not the schema.
+		const ok = parseClientMessage(
+			JSON.stringify({
+				type: "placeUnit",
+				unitType: "ballista",
+				row: 0,
+				col: 0,
+			}),
+		);
+		expect(ok.ok).toBe(true);
+	});
+
+	test("still rejects an empty unit-type string", () => {
 		const result = parseClientMessage(
-			JSON.stringify({ type: "placeUnit", unitType: "dragon", row: 0, col: 0 }),
+			JSON.stringify({ type: "placeUnit", unitType: "", row: 0, col: 0 }),
 		);
 		expect(result.ok).toBe(false);
 	});
@@ -88,11 +102,21 @@ describe("parseServerMessage", () => {
 		expect(result.ok).toBe(true);
 	});
 
-	test("rejects a state message with the wrong board size", () => {
+	test("accepts a catalog-driven board size (no longer pinned to 72x60)", () => {
 		const result = parseServerMessage(
 			JSON.stringify({
 				type: "state",
-				state: { board: { width: 8, height: 8 }, players: [], units: [] },
+				state: { board: { width: 32, height: 48 }, players: [], units: [] },
+			}),
+		);
+		expect(result.ok).toBe(true);
+	});
+
+	test("rejects a non-positive board size", () => {
+		const result = parseServerMessage(
+			JSON.stringify({
+				type: "state",
+				state: { board: { width: 0, height: -5 }, players: [], units: [] },
 			}),
 		);
 		expect(result.ok).toBe(false);

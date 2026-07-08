@@ -15,6 +15,13 @@ import { z } from "zod";
 export const BOARD_WIDTH = 72;
 export const BOARD_HEIGHT = 60;
 
+/**
+ * The original six unit types. Retained for reference and the C# mirror, but
+ * the wire no longer validates `unitType` against this fixed enum — as of M1 a
+ * unit type is any catalog `unitId` (a kebab/camel-case string), validated at
+ * runtime against the loaded catalog (see design doc §3). Full protocol v2
+ * lands in M3.
+ */
 export const UNIT_TYPES = [
 	"archer",
 	"whelp",
@@ -25,6 +32,9 @@ export const UNIT_TYPES = [
 ] as const;
 
 export type UnitType = (typeof UNIT_TYPES)[number];
+
+/** A catalog unit id on the wire. Runtime-validated against the catalog. */
+export const unitTypeSchema = z.string().min(1).max(64);
 
 const row = z
 	.number()
@@ -60,15 +70,17 @@ export const playerSchema = z.object({
 export const unitSchema = z.object({
 	id: z.string(),
 	ownerId: z.string(),
-	unitType: z.enum(UNIT_TYPES),
+	unitType: unitTypeSchema,
 	row,
 	col,
 });
 
 export const gameStateSchema = z.object({
+	// The board is catalog-driven as of M1 (default 32x48); it is no longer
+	// pinned to the legacy BOARD_WIDTH/BOARD_HEIGHT literals.
 	board: z.object({
-		width: z.literal(BOARD_WIDTH),
-		height: z.literal(BOARD_HEIGHT),
+		width: z.number().int().positive(),
+		height: z.number().int().positive(),
 	}),
 	players: z.array(playerSchema),
 	units: z.array(unitSchema),
@@ -90,7 +102,7 @@ export const joinMessageSchema = z.object({
 
 export const placeUnitMessageSchema = z.object({
 	type: z.literal("placeUnit"),
-	unitType: z.enum(UNIT_TYPES),
+	unitType: unitTypeSchema,
 	row,
 	col,
 });
@@ -130,6 +142,7 @@ export const errorCodeSchema = z.enum([
 	"outOfBounds",
 	"tileOccupied",
 	"unknownUnit",
+	"unknownUnitType",
 	"notYourUnit",
 ]);
 

@@ -1,0 +1,153 @@
+{
+	"board": {
+		"w": 32,
+		"h": 48
+	},
+	"deployZones": [
+		{
+			"seat": 0,
+			"rect": {
+				"row": 0,
+				"col": 0,
+				"w": 32,
+				"h": 24
+			},
+			"availableFromRound": 1
+		},
+		{
+			"seat": 1,
+			"rect": {
+				"row": 0,
+				"col": 24,
+				"w": 32,
+				"h": 24
+			},
+			"availableFromRound": 1
+		}
+	],
+	"income": {
+		"perRoundIncrement": 200,
+		"startingIncome": 200,
+		"carryOver": true
+	},
+	"deploysPerRound": 2,
+	"unlocksPerRound": 1,
+	"timers": {
+		"deploySeconds": 70,
+		"battleSeconds": 120,
+		"resultsHoldSeconds": 5,
+		"commanderPickSeconds": 30
+	},
+	"leveling": {
+		"hpFactorPerLevel": 1,
+		"atkFactorPerLevel": 1,
+		"upgradeCostFraction": 0.5
+	},
+	"techPriceEscalation": 200,
+	"commandersOffered": 3,
+	"startingBuildings": [
+		{
+			"seat": 0,
+			"unitId": "cathedral",
+			"anchor": {
+				"row": 14,
+				"col": 0
+			}
+		},
+		{
+			"seat": 0,
+			"unitId": "barracks",
+			"anchor": {
+				"row": 6,
+				"col": 0
+			}
+		},
+		{
+			"seat": 1,
+			"unitId": "cathedral",
+			"anchor": {
+				"row": 14,
+				"col": 44
+			}
+		},
+		{
+			"seat": 1,
+			"unitId": "barracks",
+			"anchor": {
+				"row": 6,
+				"col": 44
+			}
+		}
+	],
+	"commanders": [
+		{
+			"id": "warlord",
+			"name": "The Warlord",
+			"description": "An extra deploy each round, but a smaller life pool. Tempo over safety.",
+			"hp": 4000,
+			"startingUnits": [
+				{
+					"unitId": "footman",
+					"anchor": {
+						"row": 12,
+						"col": 4
+					}
+				}
+			],
+			"ability": [
+				{
+					"kind": "economyMod",
+					"deploySlotsAdd": 1
+				}
+			]
+		},
+		{
+			"id": "steward",
+			"name": "The Steward",
+			"description": "Richer coffers every round. Snowballs an economic lead.",
+			"hp": 5000,
+			"startingUnits": [
+				{
+					"unitId": "archer",
+					"anchor": {
+						"row": 12,
+						"col": 4
+					}
+				}
+			],
+			"ability": [
+				{
+					"kind": "economyMod",
+					"incomePerRoundAdd": 50
+				}
+			]
+		},
+		{
+			"id": "zealot",
+			"name": "The Zealot",
+			"description": "Starts with a knightly escort and a deeper life pool. Frontline resilience.",
+			"hp": 6000,
+			"startingUnits": [
+				{
+					"unitId": "holyKnight",
+					"anchor": {
+						"row": 12,
+						"col": 4
+					}
+				}
+			],
+			"ability": [
+				{
+					"kind": "statMod",
+					"unitFilter": ["holyKnight"],
+					"mods": [
+						{
+							"stat": "hp",
+							"addPct": 15
+						}
+					]
+				}
+			]
+		}
+	]
+}
