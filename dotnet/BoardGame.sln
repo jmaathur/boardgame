@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardGame.BattleServer", "B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardGame.Core.Tests", "BoardGame.Core.Tests\BoardGame.Core.Tests.csproj", "{53B87847-6F2F-4AAD-82FB-2899F90C0B32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardGame.BattleServer.Tests", "BoardGame.BattleServer.Tests\BoardGame.BattleServer.Tests.csproj", "{74AC56F1-83A9-4083-B4C3-3ED219857174}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{53B87847-6F2F-4AAD-82FB-2899F90C0B32}.Release|x64.Build.0 = Release|Any CPU
 		{53B87847-6F2F-4AAD-82FB-2899F90C0B32}.Release|x86.ActiveCfg = Release|Any CPU
 		{53B87847-6F2F-4AAD-82FB-2899F90C0B32}.Release|x86.Build.0 = Release|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Debug|x64.Build.0 = Debug|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Debug|x86.Build.0 = Debug|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Release|x64.ActiveCfg = Release|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Release|x64.Build.0 = Release|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Release|x86.ActiveCfg = Release|Any CPU
+		{74AC56F1-83A9-4083-B4C3-3ED219857174}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
