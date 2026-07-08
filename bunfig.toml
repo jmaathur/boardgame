@@ -1,0 +1,4 @@
+[install]
+# Use hoisted node_modules layout instead of Bun's isolated .bun store,
+# matching the golf-app monorepo conventions this repo is modeled on.
+linker = "hoisted"

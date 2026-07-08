@@ -1,4 +1,32 @@
-# Unity generated files
+# dependencies
+node_modules
+
+# build outputs
+dist
+out
+
+# turbo
+.turbo
+
+# typescript
+*.tsbuildinfo
+
+# env
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+
+# macOS
+.DS_Store
+
+# ---------------------------------------------------------------------------
+# Unity (apps/game-client) — patterns are unanchored so they apply wherever
+# the Unity project lives in the tree.
+# ---------------------------------------------------------------------------
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -38,12 +66,14 @@ ExportedObj/
 
 # Unity3D generated file on crash reports
 sysinfo.txt
+mono_crash.*.json
 
-# Builds
+# Unity builds
 *.apk
 *.aab
 *.unitypackage
 *.app
+*.ipa
 iosBuild/
 
 # Crashlytics generated file
@@ -55,6 +85,3 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 [Aa]ssets/[Ss]treaming[Aa]ssets/aa.meta
 [Aa]ssets/[Ss]treaming[Aa]ssets/aa/*
-
-# macOS
-.DS_Store

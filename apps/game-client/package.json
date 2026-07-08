@@ -1,0 +1,8 @@
+{
+	"name": "game-client",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"check-types": "echo 'no-op — game-client is a Unity project, compiled by the Unity editor'"
+	}
+}

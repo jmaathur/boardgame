@@ -1,0 +1,22 @@
+{
+	"name": "game-server",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"main": "src/index.ts",
+	"scripts": {
+		"dev": "bun --watch src/index.ts",
+		"start": "bun src/index.ts",
+		"build": "bun build src/index.ts --compile --outfile dist/game-server",
+		"check-types": "tsc --noEmit",
+		"test": "bun test"
+	},
+	"dependencies": {
+		"@core/types": "workspace:*"
+	},
+	"devDependencies": {
+		"@core/typescript-config": "workspace:*",
+		"@types/bun": "^1.2.5",
+		"typescript": "^5.8.2"
+	}
+}
