@@ -12,6 +12,7 @@
 	"scripts": {
 		"build": "bun run scripts/build.ts",
 		"check": "bun run scripts/build.ts && git diff --exit-code dist",
+		"sync": "bun run scripts/sync-streaming-assets.ts",
 		"check-types": "tsc --noEmit",
 		"test": "bun test"
 	},
