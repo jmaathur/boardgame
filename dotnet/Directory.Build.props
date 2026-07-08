@@ -1,0 +1,19 @@
+<Project>
+  <!--
+    Shared MSBuild defaults for every project in the BoardGame solution.
+
+    UseArtifactsOutput redirects bin/ and obj/ OUT of the source folders and
+    into dotnet/artifacts/. BoardGame.Core is dual-homed as a Unity UPM package
+    (com.boardgame.core); if MSBuild wrote bin/obj inside Runtime/, Unity would
+    try to compile the intermediate DLLs. Keeping build output in one external
+    tree keeps the package folder clean and gives turbo a single ignore path.
+  -->
+  <PropertyGroup>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>

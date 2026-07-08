@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!--
+    Production battle server (M5). ASP.NET Core minimal host with WebSockets +
+    SQLite, running the dual-homed BoardGame.Core sim at plan-lock. For M0 it
+    is just a /health host so the solution builds and deploys end-to-end.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <!-- Run on a newer major runtime when 8.0 isn't installed (see Core.Tests). -->
+    <RollForward>Major</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>BoardGame.BattleServer</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../BoardGame.Core/BoardGame.Core.csproj" />
+  </ItemGroup>
+
+</Project>

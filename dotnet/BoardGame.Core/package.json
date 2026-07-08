@@ -1,0 +1,10 @@
+{
+	"name": "com.boardgame.core",
+	"version": "0.1.0",
+	"displayName": "BoardGame Core",
+	"description": "Engine-free game rules and battle simulation for BoardGame. Dual-homed: compiled by dotnet/BoardGame.Core.csproj for the server and consumed by Unity via a manifest.json file: reference.",
+	"unity": "6000.0",
+	"dependencies": {
+		"com.unity.nuget.newtonsoft-json": "3.2.1"
+	}
+}

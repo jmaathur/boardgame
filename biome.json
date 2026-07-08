@@ -9,6 +9,7 @@
 			"!**/dist/**",
 			"!**/build/**",
 			"!**/apps/game-client/**",
+			"!**/dotnet/artifacts/**",
 			"!**/tsconfig.tsbuildinfo",
 			"!**/bun.lock"
 		]

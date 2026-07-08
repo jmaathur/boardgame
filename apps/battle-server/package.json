@@ -1,0 +1,12 @@
+{
+	"name": "battle-server",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Turbo wrapper delegating build/test/dev to the dotnet BoardGame solution. Keeps the .NET engine + battle server inside the monorepo's task graph and cache.",
+	"scripts": {
+		"build": "dotnet build ../../dotnet/BoardGame.sln -c Release --nologo",
+		"test": "dotnet test ../../dotnet/BoardGame.sln --nologo",
+		"dev": "dotnet run --project ../../dotnet/BoardGame.BattleServer",
+		"check-types": "dotnet build ../../dotnet/BoardGame.sln --nologo"
+	}
+}

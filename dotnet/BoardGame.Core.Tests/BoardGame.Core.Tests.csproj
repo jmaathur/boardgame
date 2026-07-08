@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    xUnit test project for the engine, plus the headless balance-harness CLI
+    entry point (dotnet run, args: fight lineupA vs lineupB). Targets net8.0
+    (server-side only; never loaded by Unity), so it may use modern C#.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <!--
+      CI pins the .NET 8 runtime; local dev may only have a newer major (e.g.
+      .NET 10). RollForward=Major lets the net8.0 testhost/app run on it so the
+      build is green regardless of which runtime is installed.
+    -->
+    <RollForward>Major</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <!-- Doubles as the balance-harness CLI (dotnet run). -->
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../BoardGame.Core/BoardGame.Core.csproj" />
+  </ItemGroup>
+
+</Project>
