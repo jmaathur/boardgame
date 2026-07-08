@@ -205,4 +205,56 @@ headlessly):**
 - `.meta` files for `StreamingAssets/catalog.json`, the Core package's
   `package.json`/`asmdef` — Unity generates these on import.
 
+## M3 — Multiplayer planning loop 🟡 (server + reducer done; Unity client deferred)
+
+**Built (headless, verified)**
+- **Protocol V2** (`core/types/src/protocol-v2.ts`, `PROTOCOL_VERSION = 2`) — the
+  full match-loop wire contract: client→server `join` (with resumeToken/catalogHash),
+  `pickCommander`, `buySquad`, `moveSquad`, `sellSquad`, `unlockUnit`, `buyTech`,
+  `buyLevel`, `setReady`, `battleAck`, `ping`; server→client `welcome` (seat +
+  exact catalog bytes + matchConfig + resumable snapshot), `phase`, `cmdAccepted`,
+  `cmdRejected`, `revealSnapshot`, `battleStarted`, `battleLog`, `roundResult`,
+  `matchEnded`, `error`, `pong`. Per-seat `SeatView` (private) vs `OpponentView`
+  (only last-revealed army). Coexists with V1 (no name collisions).
+- **MatchRoom reducer** (`apps/game-server/src/matchRoom.ts`) — the pure,
+  transport-free, clock-injected phase machine (lobby → commanderPick →
+  planning(N) → battle → results → … → matchEnded). No `Date.now()`/`Math.random()`
+  (deterministic; the executable spec the M5 C# port follows). Full economy
+  (income 200×N + commander mods, deploy/unlock slots, tech escalation +200,
+  level pricing), hidden simultaneous planning via per-seat views, catalog-driven
+  placement (bounds/own-half/overlap), reconnect via resumeToken, and the **stub
+  battle resolver** (invested-value comparison → prorated survivor HP damage,
+  floored). Commander HP is the player HP pool; starting buildings + commander
+  units materialize on round 1.
+- **Match server** (`apps/game-server/src/matchServer.ts`) — protocol V2 over
+  `Bun.serve` WebSockets driving MatchRoom, with a deadline ticker advancing every
+  room's phase machine, per-seat private snapshots, reveal/battleStarted/roundResult/
+  matchEnded broadcasts, and `welcome` shipping the exact catalog bytes. New
+  `dev:match`/`start:match` scripts and a second compiled binary (`dist/match-server`)
+  that embeds the catalog. `battleStarted.hasBattleLog = false` (stub era).
+- **Tests**: **19 MatchRoom reducer tests** (lobby/commanderPick, economy,
+  hidden planning, stub battle + result, **a full match played to HP zero** via
+  both explicit acks and pure deadline ticks, reconnect) + **6 match-server
+  integration tests** over a real socket (welcome + catalog bytes, commanderPick,
+  a full round pick→buy→ready→reveal→battleStarted→ack→roundResult, hidden-planning
+  leak check, command rejection). Total game-server suite: **53/53 green**.
+
+**Verified**
+- Full hidden-planning match reaches `matchEnded` with the loser's HP at 0 (the
+  M3 "Done when"), driven both by acks and by deadline ticks alone.
+- Match-server binary boots; `/health` reports `protocolVersion:2` + catalog
+  hash + 32×48 board.
+- `bunx turbo run check-types test build` → green; dotnet 18/18 green;
+  `format:check` clean.
+
+**⏭️ Deferred to a human (Unity Editor / device):**
+- The **Unity match client**: commander-pick screen, shop panel, drag placement
+  with footprint validity, ready/opponent-ready indicator, reveal beat, results
+  panel, match-end — all Unity UI. `GameServerClient` → protocol V2 + Newtonsoft,
+  `MatchClient` store, resumeToken in PlayerPrefs.
+- The **camera rig** (`MatchCameraRig`) + touch gestures (pan/pinch/rotate).
+- **Forge v1** (full form editing incl. formation/commander editors) — a browser
+  app that can be built later; v0 (browse/validate/build) already ships.
+- Running two editor instances (Multiplayer Play Mode) to play a match on screen.
+
 <!-- Subsequent milestones appended as they complete. -->
