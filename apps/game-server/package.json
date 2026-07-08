@@ -6,8 +6,10 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"dev": "bun --watch src/index.ts",
+		"dev:match": "bun --watch src/match.ts",
 		"start": "bun src/index.ts",
-		"build": "bun build src/index.ts --compile --outfile dist/game-server",
+		"start:match": "bun src/match.ts",
+		"build": "bun build src/index.ts --compile --outfile dist/game-server && bun build src/match.ts --compile --outfile dist/match-server",
 		"check-types": "tsc --noEmit",
 		"test": "bun test"
 	},
