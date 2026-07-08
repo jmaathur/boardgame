@@ -558,6 +558,128 @@
 			}
 		},
 		{
+			"id": "berserker",
+			"name": "Berserker",
+			"description": "Frenzied raiders. Fast and lethal up close, but lightly armored.",
+			"tier": 2,
+			"cost": {
+				"deployCost": 200,
+				"unlockCost": 50
+			},
+			"placement": {
+				"footprint": {
+					"w": 4,
+					"h": 2
+				},
+				"domain": "ground"
+			},
+			"squad": {
+				"count": 8,
+				"xpToLevel": 650,
+				"formation": [
+					{
+						"x": -1.8,
+						"z": -0.8
+					},
+					{
+						"x": -0.6,
+						"z": -0.8
+					},
+					{
+						"x": 0.6,
+						"z": -0.8
+					},
+					{
+						"x": 1.8,
+						"z": -0.8
+					},
+					{
+						"x": -1.8,
+						"z": 0.8
+					},
+					{
+						"x": -0.6,
+						"z": 0.8
+					},
+					{
+						"x": 0.6,
+						"z": 0.8
+					},
+					{
+						"x": 1.8,
+						"z": 0.8
+					}
+				]
+			},
+			"member": {
+				"hp": 600,
+				"speed": 4.2,
+				"weapons": [
+					{
+						"id": "twinAxes",
+						"targets": ["ground"],
+						"range": 1,
+						"interval": 0.9,
+						"damage": 210,
+						"fire": {
+							"mode": "instant"
+						}
+					}
+				]
+			}
+		},
+		{
+			"id": "shieldbearer",
+			"name": "Shieldbearer",
+			"description": "A warded guardian. Wraps nearby allies in an absorbing shield.",
+			"tier": 3,
+			"cost": {
+				"deployCost": 300,
+				"unlockCost": 100
+			},
+			"placement": {
+				"footprint": {
+					"w": 2,
+					"h": 2
+				},
+				"domain": "ground"
+			},
+			"squad": {
+				"count": 1,
+				"xpToLevel": 800,
+				"formation": [
+					{
+						"x": 0,
+						"z": 0
+					}
+				]
+			},
+			"member": {
+				"hp": 5000,
+				"speed": 1.2,
+				"abilities": [
+					{
+						"id": "wardAura",
+						"trigger": {
+							"kind": "aura",
+							"radius": 5,
+							"refreshS": 1,
+							"filter": {
+								"side": "ally",
+								"domain": "any"
+							}
+						},
+						"effects": [
+							{
+								"kind": "grantShield",
+								"amount": 40
+							}
+						]
+					}
+				]
+			}
+		},
+		{
 			"id": "warBanner",
 			"name": "War Banner",
 			"description": "A rallying standard. Boosts the damage of nearby allies.",

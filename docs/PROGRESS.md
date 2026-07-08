@@ -363,4 +363,54 @@ headlessly):**
   client sees the same protocol V2; only `battleLog` now appears.
 - Playing a real cross-network match on two phones against the deployed server.
 
-<!-- Subsequent milestones appended as they complete. -->
+## M6 — Mobile polish & content pass 🟡 (content pass done; device polish deferred)
+
+**Built (headless, verified)**
+- **Roster expanded to 12 units + 4 commanders** (the M6 target):
+  - New units: **berserker** (fast glass-cannon melee) and **shieldbearer**
+    (a support that grants nearby allies an absorbing shield via an ally aura —
+    exercises the sim's `grantShield` + shield-layer mechanics in real matches).
+  - New commander: **The Huntmaster** (+1 unlock slot/round, starts with a whelp
+    scout) — a fourth economic identity alongside Warlord/Steward/Zealot.
+  - The catalog validates + lints clean and rehashes; `catalog:sync` re-pushed
+    it to StreamingAssets; the C# conformance + Forge tests updated to 12/4.
+- **A real tuning pass via the balance harness**: berserker shipped overtuned
+  (100% vs everything at hp 900 / dmg 320); the harness surfaced it, and it was
+  nerfed (hp 600 / dmg 210 / interval 0.9) into a specialist that beats squishy
+  ranged but loses to a footman swarm — the intended glass-cannon role. This is
+  the harness working as the balance tool the plan called for.
+
+**Verified**
+- Expanded catalog builds + lints clean; `catalog:check` green.
+- Balance harness runs on the new roster and discriminates sensibly, e.g.:
+  - `footman x12 vs archer x7` → 100% (swarm buries ranged)
+  - `holyKnight x4 vs archer x6` → 50% (a balanced matchup)
+  - `berserker x8 vs footman x12` → 0% (post-nerf: swarm beats the glass cannon)
+  - `gargoyle x4 vs whelp x8` → 100% (anti-air vs flyers)
+  - `shieldbearer x1 + footman x10 vs footman x11` → 100% (the shield aura
+    turns a numerical deficit into a win — the mechanic adds value)
+- `dotnet test` → **44/44 green**; TS pipeline green; `format:check` clean.
+
+**⏭️ Deferred to a human (Unity Editor / physical device):**
+- **On-device perf profiling** — GPU instancing for squad members, LODs, draw-call
+  budgets, 60 fps target on a mid-tier phone in a late-game battle. Requires a
+  Unity build on real hardware.
+- **Battle readability polish** — HP bars, hit flashes, death clarity, tuned from
+  watching real battles on device.
+- **Playtesting-driven tuning** — further balance iterations informed by real
+  play (the harness is the tool; the judgment of "is it fun" is human).
+- Art: Meshy model intake, LOD passes, per-unit manifests + VFX.
+
+---
+
+## Summary
+
+M0–M6 are implemented as far as a headless environment allows. Every milestone's
+non-GUI, non-deployment work is built, tested, and merged to `main` behind green
+CI (both the TypeScript and .NET jobs). The deferred items are exactly the three
+categories the task carved out — **Unity Editor GUI work, credentials, and
+deployments** — each recorded per-milestone above. The engine, catalog platform,
+match loop (Bun + ported C#), deterministic battle sim, balance harness, and
+production BattleServer with SQLite persistence all exist and pass their tests;
+what remains is the Unity client/device layer and the ops step of deploying the
+already-built self-contained server binary.
