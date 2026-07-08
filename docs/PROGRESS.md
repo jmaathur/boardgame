@@ -257,4 +257,58 @@ headlessly):**
   app that can be built later; v0 (browse/validate/build) already ships.
 - Running two editor instances (Multiplayer Play Mode) to play a match on screen.
 
+## M4 — Engine + fight night 🟡 (sim + harness done; Unity playback deferred)
+
+**Built (headless, verified)**
+- **Battle simulation** (`dotnet/BoardGame.Core/Runtime/Sim/`) — a deterministic
+  fixed-20 Hz sim (design doc §6). Seeded xorshift (`XorShiftRng`, never
+  `System.Random`). Per-tick phases: statuses/DoT expiry → auras →
+  **targeting** (nearest attackable, from a frozen snapshot, id tiebreak) →
+  **movement** (steering toward target, decided from the snapshot and applied
+  simultaneously) → **weapons** (instant / volley-as-spaced-shots / range/domain
+  gating) → **buffered damage flush** (all of a tick's damage accumulates and
+  resolves together) → deaths → keyframes → end-check. Handles per-member HP,
+  splash via `areaDamage` onImpact with linear falloff, shields (absorb first),
+  aura status buffs (e.g. War Banner's `rallied` +15% damage), `flatBlock`, and
+  the damage pipeline `max(1, raw×takenMul) − flatBlock`.
+  - **Order-independence**: targeting, movement, and damage were each made
+    snapshot-based so the two seats' iteration order can't bias a symmetric
+    clash — a single squad vs. its mirror is a perfect draw.
+- **Event log** (`Runtime/Events/BattleEvent.cs`) — the ~10 v1 battle-event
+  types (battleStarted, squadSpawned, positionKeyframes at 5 Hz moved-only,
+  attackFired, damageApplied hull/shield, memberDied, statusApplied,
+  battleEnded) + `IBattleEventSink` (list sink for playback, null sink for
+  headless balance).
+- **Balance harness** (`BoardGame.Core.Tests/BalanceHarness.cs` + the
+  `Program.cs` CLI) — `dotnet run --project BoardGame.Core.Tests -- fight
+  "footman x8" vs "archer x5" --seeds 50` prints a winrate / battle-length /
+  survivor table. **Side-swaps** the two lineups across seeds so any residual
+  seat/first-mover bias cancels (mirror matchups read exactly 50%). Also the
+  intended backend for Forge's balance tab. `BattleSetup.FromLineup` auto-tiles
+  armies (seat 1 mirrored across the midline).
+- **26 xUnit tests**, including the **repeat-seed determinism gate** (same seed
+  + inputs → byte-identical serialized event log), splash multi-kill, anti-air
+  vs. flyers, overwhelming-numbers, prorated survivor value, and mirror-fairness
+  (50% after side-swap).
+
+**Verified**
+- Determinism test green (byte-identical logs on repeat seed).
+- Harness prints winrate tables and discriminates matchups sensibly (footman
+  swarm 100% vs archers; anti-air 100% vs flyers; mirrors 50%).
+- `dotnet test` → **26/26 green**; TS pipeline green; `format:check` clean.
+
+**⏭️ Deferred to a human (Unity Editor / later):**
+- **Unity BattlePlayback stack** — `BattlePlayback` playhead, `BattleViewRouter`,
+  pooled `SquadView`/`MemberView`/`ProjectileView`/`ZoneView`, procedural
+  animation (WalkBob/Hover/AttackAction/HitReact/DeathSequence), billboard HP
+  bars, speed controls (pause/1×/2×/4×), skip-to-results. All Unity runtime.
+- **Offline sandbox scene** (place both armies, run the dual-homed sim in-process,
+  watch it) — a Unity scene + editor tooling.
+- **Forge v2 balance tab** — a browser UI over the harness. Deferred to keep the
+  Forge test suite hermetic (it would need `dotnet` on the Forge host); the
+  harness CLI is the working backend.
+- Beam ramp weapons, mid-battle spawnUnits, v1.5 effects — no base-pack unit
+  needs them yet; they ride the established effect-kind seam when content does
+  (design doc §11.6).
+
 <!-- Subsequent milestones appended as they complete. -->
