@@ -74,7 +74,7 @@ Mouse clicks are handled via Physics.Raycast in BoardManager.Update():
 
 ## Important Notes
 
-- The wire protocol declares a 72x60 board (`BOARD_WIDTH` x `BOARD_HEIGHT` in `@core/types`, `GameProtocol.BoardWidth/Height` in C#), but `BoardManager.cs` currently instantiates a 32x32 grid from its own local constants — a known mismatch to reconcile when the final board size is decided (the server accepts placements up to 72x60 that have no tile on the current Unity board)
+- **Board size is DECIDED: 32×48** (32 lateral = row/world-X, 48 deep = col/world-Z), landscape, free camera, halves meeting at the midline with no no-man's-land — player = cols 0–23 (near), enemy = cols 24–47 (far). See `docs/unit-packs-and-match-loop.md` §13. This board lives as data in `core/catalog/data/match-rules.json` (`MatchRules.board`), the single source of truth; the wire protocol's old `BOARD_WIDTH`/`BOARD_HEIGHT` (72×60) and `BoardManager.cs`'s local 32×32 constants are both legacy and get reconciled to the catalog `matchConfig` during the M2/M3 migration (BoardManager is rebuilt from `matchConfig`, not local constants). Mechabellum stat transcription divisor: **÷6**.
 - `row` is the world-X tile index, `col` is the world-Z tile index — row indexes the wide axis even though that reads "sideways"
 - Tiles must have "BoardTile" tag for click detection
 - Caption text format is "B1:[xx,yy]" where xx=row, yy=col (zero-padded to 2 digits)
