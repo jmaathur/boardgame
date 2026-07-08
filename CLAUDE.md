@@ -13,6 +13,13 @@ A multiplayer board game monorepo (bun workspaces + Turborepo, modeled on the go
 
 Formatting is Biome (tabs); the Unity project is excluded from Biome. There is no eslint.
 
+## Design Docs
+
+The game is a Mechabellum-style auto-battler (medieval fantasy theme, mobile landscape). Before implementing gameplay/content/server features, consult:
+
+- `docs/implementation-plan.md` — master technical plan: milestones M0–M7, content platform (catalog + codegen + Forge editor), engine, servers, Unity client, CI.
+- `docs/unit-packs-and-match-loop.md` — content-system + match-loop design; §13 lists resolved decisions (32x48 board, free camera, commanders, ÷6 Mechabellum transcription, prorated survivor value).
+
 ## Development Commands
 
 ```bash
