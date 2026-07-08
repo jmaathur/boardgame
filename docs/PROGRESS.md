@@ -311,4 +311,56 @@ headlessly):**
   needs them yet; they ride the established effect-kind seam when content does
   (design doc §11.6).
 
+## M5 — BattleServer cutover ✅ (deploy to a VPS is the only human step)
+
+**Built (headless, verified)**
+- **Protocol V2 C# DTOs** (`BoardGame.Core/Runtime/Match/ProtocolV2.cs`) — the
+  hand-maintained C# mirror of `protocol-v2.ts`: client-message parsing
+  (discriminated on `type` via `ClientMessageV2.Parse`), state DTOs, and
+  server-message builders.
+- **MatchRoom ported to C#** (`Runtime/Match/MatchRoom.cs`) — a faithful port of
+  the Bun reducer, structurally identical so the ported test suite confirms
+  equivalence. Same phase machine / economy / hidden planning / catalog-driven
+  placement / reconnect. The one behavioral change: at plan-lock it **runs the
+  Core sim** and exposes the real event log (`LastBattleLog`). Adds
+  `CaptureState`/`RestoreState` + a `MatchRoomSnapshot` DTO for persistence.
+- **BattleServer** (`dotnet/BoardGame.BattleServer`) — ASP.NET Core minimal host:
+  `/health`, a `/ws` protocol-V2 endpoint (shared `WebSocketEndpoint.Map`), a
+  `PeriodicTimer` deadline ticker (`TickerService`), and a **per-room lock**
+  making each room a single-threaded actor (no command-interleave races). At
+  plan-lock it ships `revealSnapshot` + `battleStarted` + **`battleLog`** +
+  `roundResult`. Newtonsoft throughout (matches the wire + dodges a
+  System.Text.Json PipeWriter mismatch under roll-forward).
+- **SQLite persistence** (`RoomStore.cs`) — `IRoomStore` with a `SqliteRoomStore`
+  (one upserted row per room at every transition/command + a finished-match
+  archive table) and an `InMemoryRoomStore` for tests. `BOARDGAME_DB` selects
+  SQLite; otherwise in-memory.
+- **Ported conformance suite** (`BoardGame.BattleServer.Tests`, real Kestrel on
+  an ephemeral port + real `ClientWebSocket`): `/health` protocol v2, welcome
+  with catalog bytes, a **full round producing a real battleLog** (the cutover
+  signal — `hasBattleLog: true`), command rejection, plus **restart-resume**
+  (capture/restore round-trip, SQLite survives a reopen with reconnect tokens
+  intact, hub resumes a room from the store).
+
+**Verified**
+- `dotnet test` → **44/44 green** (37 Core incl. 11 ported MatchRoom + 7
+  BattleServer integration); **stable across 6+ isolated and 4+ full-solution
+  runs** (the earlier flake was a racing-seat test bug, now fixed via sequential
+  seat-aware joins + the per-room actor lock).
+- The real BattleServer binary boots with SQLite, `/health` returns protocol v2
+  + the embedded-catalog hash + creates the DB.
+- `dotnet publish -c Release -r <rid> --self-contained` produces a single
+  deployable binary.
+- `turbo run build test --filter=battle-server` green; TS pipeline green; format
+  clean.
+
+**⏭️ Deferred to a human:**
+- **VPS deployment** (Hetzner/Fly, credentials + DNS) — the self-contained
+  binary and Docker path are ready; publishing to a host is an ops step.
+- **Retiring `apps/game-server` + retargeting `bun dev`** — kept intentionally:
+  the Bun match server is the reference spec (its tests still gate CI) and the
+  cutover to the .NET server is a deploy/ops switch, not a code deletion. The
+  client sees the same protocol V2; only `battleLog` now appears.
+- Playing a real cross-network match on two phones against the deployed server.
+
 <!-- Subsequent milestones appended as they complete. -->

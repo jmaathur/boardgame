@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Integration tests for the production battle server: boot the ASP.NET Core
+    host in-process (WebApplicationFactory) and drive it over a real WebSocket,
+    exercising the ported protocol V2 + MatchRoom end to end. Also the
+    restart-resume test.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RollForward>Major</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <!-- Needed to use WebApplication/Kestrel directly from a non-Web test SDK. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../BoardGame.BattleServer/BoardGame.BattleServer.csproj" />
+    <ProjectReference Include="../BoardGame.Core/BoardGame.Core.csproj" />
+  </ItemGroup>
+
+</Project>
