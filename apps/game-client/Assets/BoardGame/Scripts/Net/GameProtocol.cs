@@ -8,12 +8,19 @@ namespace BoardGame.Net
     /// text frames, discriminated by their "type" field.
     ///
     /// Board convention (matches BoardManager/BoardTile): "row" is the world-X
-    /// tile index (0..71) and "col" is the world-Z tile index (0..59).
+    /// tile index (the wide/lateral axis) and "col" is the world-Z tile index
+    /// (the deep axis). The AUTHORITATIVE board size is whatever the server
+    /// sends in <see cref="GameStateDto.board"/> (catalog-driven, currently
+    /// 32x48); it is not a client constant.
     /// </summary>
     public static class GameProtocol
     {
-        public const int BoardWidth = 72;
-        public const int BoardHeight = 60;
+        // Pre-connect fallback ONLY. The live board dimensions arrive with the
+        // first welcome/state broadcast (GameStateDto.board) and BoardManager
+        // builds its grid from those, not from these constants. Kept so any
+        // pre-connection UI has a sane default; do not treat as truth.
+        public const int BoardWidth = 32;
+        public const int BoardHeight = 48;
 
         public const string UnitArcher = "archer";
         public const string UnitWhelp = "whelp";
@@ -22,6 +29,12 @@ namespace BoardGame.Net
         public const string UnitBarracks = "barracks";
         public const string UnitCathedral = "cathedral";
 
+        /// <summary>
+        /// Fallback bounds check against the pre-connect default size. Once a
+        /// state broadcast has arrived, validate against the live board
+        /// dimensions instead (the server is the real authority — it rejects
+        /// out-of-bounds placements and simply sends no state change).
+        /// </summary>
         public static bool IsInBounds(int row, int col)
         {
             return row >= 0 && row < BoardWidth && col >= 0 && col < BoardHeight;
