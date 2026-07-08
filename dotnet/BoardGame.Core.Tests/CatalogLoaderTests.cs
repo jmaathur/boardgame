@@ -20,18 +20,20 @@ namespace BoardGame.Core.Tests
             var loaded = CatalogLoader.Load(CatalogTestData.CanonicalJson());
 
             Assert.Equal(CatalogSchema.Version, loaded.Catalog.SchemaVersion);
-            // 10 units in the base pack (see core/catalog/data/packs/base.json).
-            Assert.Equal(10, loaded.Units.Count);
+            // 12 units in the base pack (see core/catalog/data/packs/base.json).
+            Assert.Equal(12, loaded.Units.Count);
             Assert.True(loaded.HasUnit("footman"));
             Assert.True(loaded.HasUnit("cathedral"));
             Assert.True(loaded.HasUnit("warBanner"));
+            Assert.True(loaded.HasUnit("berserker"));
+            Assert.True(loaded.HasUnit("shieldbearer"));
 
             // Board is the decided 32x48.
             Assert.Equal(32, loaded.MatchRules.Board.W);
             Assert.Equal(48, loaded.MatchRules.Board.H);
 
-            // 3 commanders offered.
-            Assert.Equal(3, loaded.MatchRules.Commanders.Count);
+            // 4 commanders in the roster.
+            Assert.Equal(4, loaded.MatchRules.Commanders.Count);
         }
 
         [Fact]

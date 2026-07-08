@@ -148,6 +148,27 @@
 					]
 				}
 			]
+		},
+		{
+			"id": "huntmaster",
+			"name": "The Huntmaster",
+			"description": "An extra unlock each round and a whelp scout. Flexes into any tech tree fast.",
+			"hp": 5000,
+			"startingUnits": [
+				{
+					"unitId": "whelp",
+					"anchor": {
+						"row": 12,
+						"col": 4
+					}
+				}
+			],
+			"ability": [
+				{
+					"kind": "economyMod",
+					"unlockSlotsAdd": 1
+				}
+			]
 		}
 	]
 }

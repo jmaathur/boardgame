@@ -264,6 +264,58 @@ const base = {
 				],
 			},
 		},
+		// Glass-cannon melee: 8 berserkers — fast, hard-hitting, fragile.
+		{
+			id: "berserker",
+			name: "Berserker",
+			description:
+				"Frenzied raiders. Fast and lethal up close, but lightly armored.",
+			tier: 2,
+			cost: { deployCost: 200, unlockCost: 50 },
+			placement: { footprint: { w: 4, h: 2 }, domain: "ground" },
+			squad: { count: 8, xpToLevel: 650, formation: grid(8, 4, 4, 2) },
+			member: {
+				hp: 600,
+				speed: 4.2,
+				weapons: [
+					{
+						id: "twinAxes",
+						targets: ["ground"],
+						range: 1,
+						interval: 0.9,
+						damage: 210,
+						fire: { mode: "instant" },
+					},
+				],
+			},
+		},
+		// Shield support: 1 shieldbearer granting nearby allies an absorbing shield.
+		{
+			id: "shieldbearer",
+			name: "Shieldbearer",
+			description:
+				"A warded guardian. Wraps nearby allies in an absorbing shield.",
+			tier: 3,
+			cost: { deployCost: 300, unlockCost: 100 },
+			placement: { footprint: { w: 2, h: 2 }, domain: "ground" },
+			squad: { count: 1, xpToLevel: 800, formation: [{ x: 0, z: 0 }] },
+			member: {
+				hp: 5000,
+				speed: 1.2,
+				abilities: [
+					{
+						id: "wardAura",
+						trigger: {
+							kind: "aura",
+							radius: 5,
+							refreshS: 1,
+							filter: { side: "ally", domain: "any" },
+						},
+						effects: [{ kind: "grantShield", amount: 40 }],
+					},
+				],
+			},
+		},
 		// Aura support: 1 war banner buffing nearby allies while alive.
 		{
 			id: "warBanner",
@@ -386,6 +438,15 @@ const matchRules = {
 					mods: [{ stat: "hp", addPct: 15 }],
 				},
 			],
+		},
+		{
+			id: "huntmaster",
+			name: "The Huntmaster",
+			description:
+				"An extra unlock each round and a whelp scout. Flexes into any tech tree fast.",
+			hp: 5000,
+			startingUnits: [{ unitId: "whelp", anchor: { row: 12, col: 4 } }],
+			ability: [{ kind: "economyMod", unlockSlotsAdd: 1 }],
 		},
 	],
 };

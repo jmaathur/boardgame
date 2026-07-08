@@ -22,7 +22,7 @@ afterEach(() => {
 	for (const fs of servers.splice(0)) fs.stop();
 });
 
-test("GET /api/catalog returns ok with 10 units and a hash", async () => {
+test("GET /api/catalog returns ok with the full unit roster and a hash", async () => {
 	const fs = startServer();
 	const res = await fetch(`${base(fs)}/api/catalog`);
 	expect(res.status).toBe(200);
@@ -33,7 +33,7 @@ test("GET /api/catalog returns ok with 10 units and a hash", async () => {
 	const units = data.catalog.packs.flatMap(
 		(p: { units: unknown[] }) => p.units,
 	);
-	expect(units.length).toBe(10);
+	expect(units.length).toBe(12);
 });
 
 test("GET /api/packs includes base.json", async () => {
