@@ -4,6 +4,10 @@ node_modules
 # build outputs
 dist
 out
+# ...except the built catalog, which is committed so `catalog:check`
+# (git diff --exit-code dist) catches drift and the servers can load it.
+!core/catalog/dist/
+!core/catalog/dist/**
 
 # turbo
 .turbo

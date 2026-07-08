@@ -1,5 +1,7 @@
+import { loadEmbeddedCatalog } from "@core/catalog/embedded";
 import { type ServerMessage, parseClientMessage } from "@core/types";
 import type { Server, ServerWebSocket } from "bun";
+import { type ServerCatalog, indexCatalog } from "./catalog";
 import { Room } from "./room";
 
 export type SocketData = {
@@ -12,6 +14,7 @@ type GameSocket = ServerWebSocket<SocketData>;
 export type GameServer = {
 	server: Server<SocketData>;
 	rooms: ReadonlyMap<string, Room>;
+	catalog: ServerCatalog;
 	stop: () => void;
 };
 
@@ -46,9 +49,23 @@ export function portFromEnv(): number {
  * - GET /ws     — WebSocket upgrade; clients then speak the @core/types
  *                 protocol (join first, then placeUnit/moveUnit/ping).
  *
- * Pass `port: 0` to bind an ephemeral port (used by tests).
+ * Pass `port: 0` to bind an ephemeral port (used by tests). Pass `catalog` to
+ * inject an already-parsed catalog (tests); otherwise the built catalog is
+ * loaded from @core/catalog's dist bytes at boot — a corrupt/missing catalog
+ * is a hard boot failure, which is correct (a server must never run without
+ * validated sim data).
  */
-export function createGameServer(options: { port?: number } = {}): GameServer {
+export function createGameServer(
+	options: { port?: number; catalog?: ServerCatalog } = {},
+): GameServer {
+	const catalog =
+		options.catalog ??
+		(() => {
+			// Embedded (bundler-resolved) so `bun build --compile` ships the exact
+			// dist bytes inside the binary — no sidecar catalog file needed.
+			const { catalog, hash } = loadEmbeddedCatalog();
+			return indexCatalog(catalog, hash);
+		})();
 	const rooms = new Map<string, Room>();
 
 	const topic = (roomId: string) => `room:${roomId}`;
@@ -68,7 +85,13 @@ export function createGameServer(options: { port?: number } = {}): GameServer {
 				let players = 0;
 				for (const room of rooms.values())
 					players += room.getState().players.length;
-				return Response.json({ status: "ok", rooms: rooms.size, players });
+				return Response.json({
+					status: "ok",
+					rooms: rooms.size,
+					players,
+					catalogHash: catalog.hash,
+					board: catalog.board,
+				});
 			}
 			if (url.pathname === "/ws") {
 				const upgraded = server.upgrade(req, {
@@ -118,7 +141,7 @@ export function createGameServer(options: { port?: number } = {}): GameServer {
 					}
 					let room = rooms.get(message.roomId);
 					if (!room) {
-						room = new Room(message.roomId);
+						room = new Room(message.roomId, catalog);
 						rooms.set(message.roomId, room);
 					}
 					room.addPlayer(ws.data.playerId, message.playerName);
@@ -193,6 +216,7 @@ export function createGameServer(options: { port?: number } = {}): GameServer {
 	return {
 		server,
 		rooms,
+		catalog,
 		stop: () => server.stop(true),
 	};
 }

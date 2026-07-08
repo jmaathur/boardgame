@@ -13,6 +13,10 @@
 		"check-types": {
 			"dependsOn": ["^check-types"]
 		},
+		"check": {
+			"cache": false,
+			"dependsOn": ["^build"]
+		},
 		"test": {
 			"dependsOn": ["check-types", "^check-types"]
 		}
