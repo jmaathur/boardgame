@@ -12,6 +12,6 @@ namespace BoardGame.Core
         /// the <c>schemaVersion</c> in core/types; the catalog loader gates on
         /// it (a mismatch is a hard load error, not a silent reinterpret).
         /// </summary>
-        public const int SchemaVersion = 1;
+        public const int SchemaVersion = Generated.CatalogSchema.Version;
     }
 }

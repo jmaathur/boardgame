@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "com.boardgame.core": "file:../../../dotnet/BoardGame.Core",
+    "com.unity.nuget.newtonsoft-json": "3.2.1",
     "com.unity.ai.navigation": "2.0.5",
     "com.unity.collab-proxy": "2.10.2",
     "com.unity.ide.rider": "3.0.31",

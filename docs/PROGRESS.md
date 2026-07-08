@@ -141,4 +141,68 @@ Legend: ✅ done & verified · 🟡 partial · ⏭️ deferred to a human
 manifests, StreamingAssets sync, Formation Preview — is M2, where the
 Editor-GUI parts are noted.)
 
+## M2 — Unity consumes the catalog 🟡 (engine + sync done; Unity-Editor parts deferred)
+
+**Built (headless, verified)**
+- **Catalog DTOs** (`dotnet/BoardGame.Core/Runtime/Catalog/CatalogDto.cs`) —
+  hand-maintained C# DTOs mirroring the zod catalog schema, with Newtonsoft
+  discriminator converters for every union (Effect, Trigger, FireMode,
+  TechEffect, CommanderAbility) and a `ScaledValue` struct + converter that
+  reads both the flat-number and `{base, perLevel}` JSON forms.
+  - **Codegen decision**: the plan budgeted a zod→C# emitter but capped it at
+    ~400 lines. A first attempt via `z.toJSONSchema()` produced **2022 lines**
+    of duplicated types (every inlined union re-emitted per use site, no
+    structural dedup). Per the plan's own mitigation (">~400 lines ⇒
+    hand-maintain DTOs") the emitter was removed and the DTOs hand-written. The
+    drift guard is now a **conformance test** that round-trips the real
+    committed catalog through the DTOs — same guarantee, achieved on the actual
+    shipped bytes.
+- **CatalogLoader** (`Runtime/Catalog/CatalogLoader.cs`) — parse, hard
+  schemaVersion gate, sha256-as-received, `LoadVerified` (hash check), and
+  indexed unit/commander/status lookups.
+- **Footprint/Formation** (`Runtime/Catalog/Footprint.cs`) — `TileRect`,
+  oriented footprint size (swap w/h), oriented formation (rotate (x,z)→(z,−x)),
+  board-fit check. Shared by placement and (later) the sim.
+- **Placement** (`Runtime/Match/Placement.cs`) — the C# port of the Bun room's
+  placement validation: catalog membership, board bounds, own-half (deploy
+  zone) containment (buildings exempt), footprint overlap.
+- **18 xUnit tests** (`BoardGame.Core.Tests`): catalog conformance (roster,
+  board 32×48, 3 commanders), hash matches committed hash, schemaVersion gate,
+  discriminated-union deserialization, ScaledValue both forms, footprint
+  orientation/rotation, and placement rules mirroring the Bun room tests.
+- **`catalog:sync`** (`core/catalog/scripts/sync-streaming-assets.ts` + root
+  `catalog:sync`) — copies the built catalog **verbatim** into
+  `apps/game-client/Assets/StreamingAssets/` (the client's offline fallback);
+  verified the StreamingAssets hash matches dist exactly.
+- **Unity UPM wiring** (`apps/game-client/Packages/manifest.json`) — added the
+  `com.boardgame.core` `file:` reference and `com.unity.nuget.newtonsoft-json`
+  so the engine + Newtonsoft resolve when the project is opened. Manifest
+  validated as JSON.
+
+**Verified**
+- `dotnet build` + `dotnet test` → **18/18 green** (loader, conformance,
+  footprint, placement).
+- `catalog:sync` → StreamingAssets catalog.json/.hash byte-match dist.
+- `bunx turbo run check-types test build` + `catalog:check` → green;
+  `format:check` clean.
+
+**⏭️ Deferred to a human (Unity Editor / device — cannot be done or verified
+headlessly):**
+- Opening the project so Unity imports `com.boardgame.core` + Newtonsoft and
+  generates their `.meta` files; confirming the engine compiles inside Unity.
+- **Rewriting `BoardManager.cs`** to be catalog-driven (build the board from
+  `matchConfig`, place units from catalog footprints/formations, orientation
+  toggle) and **deleting** the 8 `*Details.cs`/`IUnitDetails` files + 6
+  `.asset`s + `GameProtocol.cs` unit constants. These are intentionally NOT
+  deleted here: `BoardManager` still references the Details classes, so removing
+  them without the (Editor-only) rewrite would leave the Unity project
+  uncompilable, which cannot be verified in a headless environment.
+- **CatalogService** MonoBehaviour (welcome-delivered catalog with
+  StreamingAssets fallback) — depends on the Unity runtime + protocol v2 (M3).
+- **Grid-shader board** at 32×48 (replace 1,024 per-tile GameObjects), manifests
+  + placeholder pipeline, Formation Preview + Pack Validator EditMode tools.
+- **IL2CPP device smoke build** validating the Newtonsoft converters on device.
+- `.meta` files for `StreamingAssets/catalog.json`, the Core package's
+  `package.json`/`asmdef` — Unity generates these on import.
+
 <!-- Subsequent milestones appended as they complete. -->
