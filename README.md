@@ -1,7 +1,14 @@
-# boardgame
+# Warcaller
 
-A multiplayer board game: a Unity client and an authoritative Bun game
-server, organized as a bun-workspaces + Turborepo monorepo.
+**Warcaller: Legion Tactics** — a Mechabellum-style medieval-fantasy
+auto-battler. Two commanders muster squads onto a shared board, spend
+per-round income to reinforce, and watch the battle auto-resolve. Built as a
+Unity client and an authoritative Bun game server, organized as a
+bun-workspaces + Turborepo monorepo.
+
+> Working title. The monorepo package names (`boardgame`, `game-client`,
+> `com.boardgame.core`) are technical identifiers and intentionally left
+> unchanged.
 
 ## Layout
 
