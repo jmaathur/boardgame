@@ -79,9 +79,9 @@ class Client {
 	}
 
 	/** Await the next `state` broadcast, skipping any interleaved messages. */
-	async nextState(timeoutMs = 2000): Promise<
-		Extract<ServerMessage, { type: "state" }>
-	> {
+	async nextState(
+		timeoutMs = 2000,
+	): Promise<Extract<ServerMessage, { type: "state" }>> {
 		const deadline = Date.now() + timeoutMs;
 		for (;;) {
 			const remaining = Math.max(1, deadline - Date.now());
